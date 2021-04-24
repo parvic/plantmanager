@@ -1,5 +1,7 @@
 import React from "react";
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import { FlatList } from "react-native-gesture-handler";
+import { EnvironmentButton } from "../components/EnvironmentButton";
 
 import { Header } from "../components/Header";
 import colors from "../styles/colors";
@@ -20,6 +22,16 @@ export function PlantSelection() {
         </Text>
 
       </View>
+      <FlatList 
+        data={[1, 2, 3, 4, 5]}
+        renderItem={({ item }) => (
+          <EnvironmentButton title="Cozinha" />
+          )}
+          
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.environmentList}
+      />
     </SafeAreaView>
   );
 }
@@ -43,4 +55,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.text,
     color: colors.body_dark,
   },
+  environmentList: {
+
+  }
 });
