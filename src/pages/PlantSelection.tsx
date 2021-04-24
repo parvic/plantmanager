@@ -2,6 +2,8 @@ import React from "react";
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
 
 import { Header } from "../components/Header";
+import colors from "../styles/colors";
+import fonts from "../styles/fonts";
 
 export function PlantSelection() {
 
@@ -23,8 +25,22 @@ export function PlantSelection() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
-  header: {},
-  title:{},
-  subtitle: {},
+  container: {
+    paddingHorizontal: 32,
+    paddingTop: 50,
+  },
+  header: {
+
+  },
+  title:{
+    fontSize: 17,
+    fontFamily: fonts.heading,
+    color: colors.body_dark,
+    paddingTop: 50,
+  },
+  subtitle: {
+    fontSize: 17,
+    fontFamily: fonts.text,
+    color: colors.body_dark,
+  },
 });
