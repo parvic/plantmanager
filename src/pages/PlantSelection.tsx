@@ -4,7 +4,10 @@ import { FlatList } from "react-native-gesture-handler";
 
 import { EnvironmentButton } from "../components/EnvironmentButton";
 import { Header } from "../components/Header";
+import { Load } from "../components/Load";
 import { PlantCard } from "../components/PlantCard";
+
+
 import api from "../services/api";
 import colors from "../styles/colors";
 import fonts from "../styles/fonts";
@@ -33,6 +36,7 @@ export function PlantSelection() {
   const [plants, setPlants] = useState<PlantProps[]>([]);
   const [filteredPlants, setFilteredPlants] = useState<PlantProps[]>([]);
   const [environmentSelected, setEnvironmentSelected] = useState('all');
+  const [loading, setLoading] = useState(true);
 
 
   function handleEnvironmentSelected(environment: string) {
@@ -40,7 +44,6 @@ export function PlantSelection() {
 
     const filtered = plants.filter(plant => plant.environments.includes(environment));
     setFilteredPlants(filtered);
-
   }
 
   useEffect(() => {
@@ -61,10 +64,14 @@ export function PlantSelection() {
     async function fetchPlants() {
       const { data } = await api.get('plants?_sort=name&_order=asc');
       setPlants(data);
+      setLoading(false);
     }
 
     fetchPlants();
   },[]);
+
+  if(loading)
+    return <Load />
 
   return(
     <SafeAreaView style={styles.container}>
@@ -144,7 +151,7 @@ const styles = StyleSheet.create({
   },
   plantsList: {
     flex: 1,
-    paddingHorizontal: 32,
+    paddingHorizontal: 20,
     justifyContent: 'center',
   },
 });
