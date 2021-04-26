@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView, 
+  View, 
+  Text, 
+  ActivityIndicator,
+  StyleSheet 
+} from 'react-native';
 import { FlatList } from "react-native-gesture-handler";
 
 import { EnvironmentButton } from "../components/EnvironmentButton";
@@ -33,17 +38,47 @@ interface PlantProps {
 export function PlantSelection() {
 
   const [environments, setEnvironments] = useState<EnvironmentProps[]>([]);
+  const [environmentSelected, setEnvironmentSelected] = useState('all');
   const [plants, setPlants] = useState<PlantProps[]>([]);
   const [filteredPlants, setFilteredPlants] = useState<PlantProps[]>([]);
-  const [environmentSelected, setEnvironmentSelected] = useState('all');
+  
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadedAll, setLoadedAll] = useState(false);
 
+  const [page, setPage] = useState(1);
 
   function handleEnvironmentSelected(environment: string) {
     setEnvironmentSelected(environment);
 
     const filtered = plants.filter(plant => plant.environments.includes(environment));
     setFilteredPlants(filtered);
+  }
+
+  async function fetchPlants() {
+    const { data } = await api.get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`);
+    if(!data)
+      return setLoading(true);
+    
+    if(page > 1) {
+      setPlants(oldValue => [...oldValue, ...data]);
+      setFilteredPlants(oldValue => [...oldValue, ...data]);
+    } else {
+      setPlants(data);
+      setFilteredPlants(data);
+    }
+    setLoading(false);
+    setLoadingMore(false);
+  }
+
+  function handleFetchMore(distance: number) {
+    if(distance < 1) {
+      return;
+    }
+
+    setLoadingMore(true);
+    setPage(oldValue => oldValue + 1);
+    fetchPlants();
   }
 
   useEffect(() => {
@@ -61,11 +96,6 @@ export function PlantSelection() {
   },[]);
 
   useEffect(() => {
-    async function fetchPlants() {
-      const { data } = await api.get('plants?_sort=name&_order=asc');
-      setPlants(data);
-      setLoading(false);
-    }
 
     fetchPlants();
   },[]);
@@ -111,7 +141,11 @@ export function PlantSelection() {
           )}
           showsVerticalScrollIndicator={false}
           numColumns={2}
-          // contentContainerStyle={styles.plantList}
+          onEndReachedThreshold={0.1}
+          onEndReached={({distanceFromEnd}) => handleFetchMore(distanceFromEnd)}
+          ListFooterComponent={
+            loadingMore ? <ActivityIndicator color={colors.green} /> : <></>
+          }
         />
       </View>
 
